@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 
-app = FastAPI(title="Shop API")
+router = APIRouter(tags=["api"], prefix="/health")
 
 
-@app.get("/health", tags=["health"])
+@router.get('/')
 def health() -> dict[str, str]:
     return {"status": "ok"}
