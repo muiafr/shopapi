@@ -1,5 +1,4 @@
 import os
-
 from dotenv import load_dotenv
 from sqlalchemy import URL
 
@@ -7,14 +6,18 @@ load_dotenv()
 
 
 def get_config():
-    if os.getenv("DATABASE"):
-        return os.environ["DATABASE"]
+    database_url = os.getenv("DATABASE")
+    if database_url:
+        return database_url
 
-    return URL.create(
-        "postgresql+psycopg",
-        username=os.environ["DATABASE_USER"],
-        password=os.environ["DATABASE_PASSWORD"],
-        host=os.environ["DATABASE_HOST"],
-        port=int(os.getenv("DATABASE_PORT", "5432")),
-        database=os.environ["DATABASE_NAME"],
-    )
+    try:
+        return URL.create(
+            drivername="postgresql+psycopg",
+            username=os.getenv("DATABASE_USER"),
+            password=os.getenv("DATABASE_PASSWORD"),
+            host=os.getenv("DATABASE_HOST", "localhost"),
+            database=os.getenv("DATABASE_NAME"),
+            port=int(os.getenv("DATABASE_PORT", "5432")),
+        )
+    except (TypeError, ValueError) as e:
+        raise RuntimeError(f"Invalid database configuration: {e}") from e

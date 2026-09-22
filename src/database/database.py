@@ -15,3 +15,4 @@ def get_db():
         except Exception:
             db.rollback()
             raise
+
