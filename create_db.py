@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text
 from src.core.config import get_config
 
-# get_config() возвращает URL из отдельных параметров .env
+
 url = get_config()
 db_name = url.database
 
