@@ -8,6 +8,6 @@ class Products(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(String)
-    price = Column(Numeric(10, 2), nullable=False)
+    price = Column(Numeric(10, 2), nullable=False, default=0)
     category = Column(String)
 

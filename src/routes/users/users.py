@@ -18,7 +18,9 @@ async def get_users(db: Session = Depends(get_db) ):
 
 @router.get('/{id}', response_model=UserRead, status_code=200)
 async def get_user(id: int, db: Session = Depends(get_db)):
-        user = db.query(Users).filter(Users.id == id).first()
+        user = db.get(Users,id)
+        if db.user is None:
+            raise HTTPException(status_code=404, detail="Product not found")
         return user
 
 
@@ -32,10 +34,29 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
         email = user.email,
         password = user.password
     )
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
+
+@router.patch("/{id}", response_model=UserRead, status_code=200)
+async def edit_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
+    db_user = db.get(Users,id)
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    changes = user.model_dump(exclude_unset=True)
+
+    for field, value in changes.items():
+        setattr(db_user, field, value)
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
 
 @router.delete("/{id}", response_model=UserRead, status_code=200)
 async def delete_user(id: int, db: Session = Depends(get_db)):
